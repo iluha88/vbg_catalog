@@ -1,0 +1,18 @@
+{% extends "base.html"%}
+{% block title %}
+    <title>Каталог фирм</title>
+{% endblock %}
+{% block content %}
+    <h2>Фирмы Выборга по алфавиту</h2>
+    <dl>
+        {% for firm in object_list %}
+            <li><a href="{{ firm.get_adress }}">{{ firm.name }}</a>
+           {% for rubric in firm.rubric_set.all %}
+               {{ rubric.name }}&nbsp;
+               {% endfor %}
+            </li>
+        {% endfor %}
+    </dl>
+{% endblock %}
+
+

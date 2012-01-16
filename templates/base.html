@@ -1,0 +1,19 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    {% block title %}{% endblock%}
+    <link rel="stylesheet" href="http://twitter.github.com/bootstrap/1.4.0/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+{% block content %}{% endblock %}
+{%   comment %}
+<div id="leftmenu">
+{% block leftmenu %}{% endblock %}
+</div>
+{% endcomment %}
+
+</div>
+</body>
+</html>

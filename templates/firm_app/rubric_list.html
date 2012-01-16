@@ -1,0 +1,27 @@
+{% extends "base.html"%}
+{% block title %}
+    <title>Рубрики</title>
+{% endblock %}
+
+{% block content %}
+    <ul>
+    {% for rubric in object_list %}
+        <li>{% if rubric.parent %}`{{ rubric.parent }} - {% endif %}{{ rubric.name }}</li>
+    {% endfor %}
+    </ul>
+    <div class="row">
+    <div class="span6 offset4">
+   <h3>список главных рубрик</h3>
+    </div>
+    </div>
+    <dl>
+    {% for rubric in object_list %}
+        {%  if rubric.parent %}
+            Родитель
+       {% else %}
+       <li> {{ rubric.name }} </li>
+       {% endif %}
+
+    {% endfor %}
+   </dl>
+{% endblock %}

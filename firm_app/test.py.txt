@@ -1,0 +1,86 @@
+__author__ = 'iluha'
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=150, verbose_name='Категория', null=False)
+    order = models.PositiveIntegerField(default=1)
+    image = models.ImageField(upload_to='category')
+
+    class Meta:
+        ordering = ['order']
+        verbose_name_plural = 'categories'
+
+    def __unicode__(self):
+        return self.name
+
+    @permalink
+    def get_absolute_url(self):
+        return ('averselite.realestate.views.object_list', None, { 'slug' : self.slug } )
+
+
+class RealEstate(models.Model):
+    name = models.CharField(max_length=150, null=False, default='', verbose_name='Название')
+    category = models.ForeignKey(Category, default=1, null=False, verbose_name='Категория')
+
+    slug = models.SlugField(max_length=150, verbose_name='SEO URL Адрес', null=False, default='', unique=True, blank=True)
+
+
+    parameter = models.ManyToManyField(Parameter, through="RealEstateParameter")
+
+    class Meta:
+        ordering = ['-id']
+
+
+    def __unicode__(self):
+        return self.name
+
+    @permalink
+    def get_absolute_url(self):
+        return self.slug
+
+
+class RealEstateParameter(models.Model):
+    realestate = models.ForeignKey(RealEstate, default=1)
+    parameter = models.ForeignKey(Parameter, default=1)
+    value = models.CharField(max_length=150, null=False, default='')
+
+    def __unicode__(self):
+        return self.value
+
+    @permalink
+    def get_absolute_url(self):
+        return self.id
+
+
+==================================
+class ParameterAdmin(admin.ModelAdmin):
+    list_filter  = ( 'category',  'type', 'search', 'view',  'name',)
+    search_fields  = ('name', )
+    list_display = ('name', 'category', 'type', 'search', 'view',   )
+
+class RealEstateParameterAdmin(admin.ModelAdmin):
+    list_display = ('realestate', 'parameter', 'value', )
+
+
+class RealEstateParametersInline(admin.TabularInline):
+    model = RealEstate.parameter.through
+    extra = 4
+
+class RealEstateForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(RealEstateForm, self).__init__(*args, **kwargs)
+        photos = Photoalbum.objects.filter(realestate__id=self.instance.pk)
+        w1 = self.fields['images'].widget
+        choices1 = []
+        for choice1 in photos:
+            choices1.append((choice1.id, choice1.name))
+        w1.choices = choices1
+
+        # self.fields['parameters'].queryset = Category.objects.filter(pk=self.instance.category_id)
+
+class RealEstateAdmin(admin.ModelAdmin):
+    list_display = ('name', 'price',  'category',  )
+    list_filter  = ('name', 'category', )
+    search_fields  = ('name', 'price', 'image', 'category',  )
+    form = RealEstateForm
+    inlines = (RealEstateParametersInline,)
